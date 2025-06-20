@@ -32,17 +32,33 @@
     ]
 
     dependencies = []
+    optional-dependencies.dev = ["pytest", "coverage"]
 
 [project.urls]
     Homepage = "https://github.com/voidbert/scheduler"
     Repository = "https://github.com/voidbert/scheduler"
     "Bug Tracker" = "https://github.com/voidbert/scheduler/issues"
 
-[tool.setuptools]
-    packages = ['scheduler']
+[tool.coverage]
+    run.branch = true
+    run.data_file = ".coverage"
+    run.command_line = "-m pytest"
+    run.source = ["scheduler/"]
+    html.directory = "coverage"
+    json.output = "coverage.json"
+    lcov.output = "coverage.lcov"
+    xml.output = "coverage.xml"
 
 [tool.mypy]
+    packages = ["scheduler", "tests"]
     strict = true
+
+[tool.pytest.ini_options]
+    testpaths = ["tests"]
+    pythonpath = ["."]
+
+[tool.setuptools]
+    packages = ['scheduler']
 
 [project.scripts]
     scheduler = "scheduler.__main__:main"
