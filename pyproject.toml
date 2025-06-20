@@ -31,7 +31,7 @@
         "Typing :: Typed"
     ]
 
-    dependencies = []
+    dependencies = ["pypdf"]
     optional-dependencies.dev = ["pytest", "coverage"]
 
 [project.urls]
