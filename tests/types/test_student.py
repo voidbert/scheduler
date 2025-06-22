@@ -5,17 +5,13 @@ import pytest
 from scheduler.types.course import Course
 from scheduler.types.student import Student, StudentError
 
-def test_init_ascii_1() -> None:
-    student = Student('A10000')
-    assert student.number == 'A10000'
-
-def test_init_ascii_2() -> None:
+def test_init_ascii() -> None:
     student = Student('E5000')
     assert student.number == 'E5000'
 
 def test_init_non_ascii() -> None:
-    with pytest.raises(StudentError):
-        Student('Á100000')
+    student = Student('Á100000')
+    assert student.number == 'Á100000'
 
 def test_init_courses_empty() -> None:
     student1 = Student('E5000')
@@ -23,23 +19,23 @@ def test_init_courses_empty() -> None:
     assert student1 == student2
 
 def test_init_courses_encapsulation() -> None:
-    courses = {'SistemasOperativos': Course('Sistemas Operativos')}
+    courses = {'Sistemas Operativos': Course('Sistemas Operativos')}
     student = Student('A100000', courses)
     assert student.courses == courses
 
-    courses['SistemasDistribuidos'] = Course('Sistemas Distribuídos')
+    courses['Sistemas Distribuídos'] = Course('Sistemas Distribuídos')
     assert len(student.courses) == 1
 
 def test_init_courses_invalid() -> None:
-    courses = {'SistemasOperativos': Course('Sistemas Distribuídos')}
+    courses = {'Sistemas Operativos': Course('Sistemas Distribuídos')}
 
     with pytest.raises(StudentError):
         Student('A100000', courses)
 
 def test_add_course_valid() -> None:
-    courses = {'SistemasOperativos': Course('Sistemas Operativos')}
+    courses = {'Sistemas Operativos': Course('Sistemas Operativos')}
     student = Student('A100000')
-    student.add_course(courses['SistemasOperativos'])
+    student.add_course(courses['Sistemas Operativos'])
     assert student.courses == courses
 
 def test_add_course_double() -> None:
@@ -47,7 +43,7 @@ def test_add_course_double() -> None:
 
     student.add_course(Course('Sistemas Operativos'))
     with pytest.raises(StudentError):
-        student.add_course(Course('Sistemas         Operativos'))
+        student.add_course(Course('Sistemas Operativos'))
 
 def test_add_course_triple() -> None:
     student = Student('A100000')
@@ -58,7 +54,7 @@ def test_add_course_triple() -> None:
     assert len(student.courses) == 2
 
     with pytest.raises(StudentError):
-        student.add_course(Course('Sistemas         Operativos'))
+        student.add_course(Course('Sistemas Operativos'))
 
 def test_courses_encapsulation() -> None:
     student = Student('A100000')
@@ -132,7 +128,7 @@ def test_repr_empty() -> None:
 def test_repr_courses() -> None:
     student = Student('A100000')
     student.add_course(Course('Sistemas Operativos'))
-    assert repr(student) == 'Student(number=\'A100000\', courses={\'SistemasOperativos\': ...})'
+    assert repr(student) == 'Student(number=\'A100000\', courses={\'Sistemas Operativos\': ...})'
 
 def test_str_empty() -> None:
     student = Student('A100000')
@@ -141,4 +137,4 @@ def test_str_empty() -> None:
 def test_str_courses() -> None:
     student = Student('A100000')
     student.add_course(Course('Sistemas Operativos'))
-    assert str(student) == 'Student(number=\'A100000\', courses={\'SistemasOperativos\': ...})'
+    assert str(student) == 'Student(number=\'A100000\', courses={\'Sistemas Operativos\': ...})'

@@ -1,7 +1,6 @@
 from __future__ import annotations
 import copy
 import typing
-import unicodedata
 
 from .ellipsis import EllipsisRepr
 
@@ -13,11 +12,7 @@ class CourseError(Exception):
 
 class Course:
     def __init__(self, name: str, students: None | dict[str, Student] = None) -> None:
-        normalized_name = unicodedata.normalize('NFKD', name)
-        unaccented_name = normalized_name.encode('ascii', 'ignore').decode('ascii')
-        self.__id = ''.join(c for c in unaccented_name if c.isalnum())
-
-        self.__name = unicodedata.normalize('NFC', name)
+        self.__name = name
 
         if students is None:
             self.__students = {}
@@ -34,7 +29,7 @@ class Course:
 
     @property
     def id(self) -> str:
-        return self.__id
+        return self.__name
 
     @property
     def name(self) -> str:
@@ -55,9 +50,9 @@ class Course:
         return Course(self.__name, self.students)
 
     def __hash__(self) -> int:
-        return hash(self.__id)
+        return hash(self.id)
 
     def __repr__(self) -> str:
         ellipsis = EllipsisRepr()
         showable_students = {number: ellipsis for number in self.__students}
-        return f"Course(name={self.__name!r}, students={showable_students!r})"
+        return f'Course(name={self.__name!r}, students={showable_students!r})'

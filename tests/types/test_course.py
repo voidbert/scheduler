@@ -5,17 +5,10 @@ import pytest
 from scheduler.types.course import Course, CourseError
 from scheduler.types.student import Student
 
-def test_init_name() -> None:
+def test_init_name_id() -> None:
     course = Course('Programação Orientada aos Objetos')
     assert course.name == 'Programação Orientada aos Objetos'
-
-def test_init_id_ascii() -> None:
-    course = Course('Algoritmos e Complexidade')
-    assert course.id == 'AlgoritmoseComplexidade'
-
-def test_init_id_unicode() -> None:
-    course = Course('Programação Orientada aos Objetos')
-    assert course.id == 'ProgramacaoOrientadaaosObjetos'
+    assert course.id == 'Programação Orientada aos Objetos'
 
 def test_init_students_empty() -> None:
     course1 = Course('Programação Orientada aos Objetos')
@@ -97,7 +90,7 @@ def test_eq_different_same_courses_different_content() -> None:
     course1 = Course('Processamento de Linguagens')
     course2 = Course('Processamento de Linguagens')
     course1.add_student(Student('A100000'))
-    course2.add_student(Student('A100000', {'ProcessamentodeLinguagens': course1}))
+    course2.add_student(Student('A100000', {'Processamento de Linguagens': course1}))
     assert course1 == course2
 
 def test_copy_encapsulation() -> None:
@@ -118,15 +111,10 @@ def test_hash_equals() -> None:
     course2 = Course('Desenvolvimento de Sistemas de Software')
     assert hash(course1) == hash(course2)
 
-def test_hash_different_name_different_id() -> None:
+def test_hash_different_name() -> None:
     course1 = Course('Desenvolvimento de Sistemas de Software')
     course2 = Course('Sistemas Operativos')
     assert hash(course1) != hash(course2)
-
-def test_hash_different_name_same_id() -> None:
-    course1 = Course('SistemasOperativos')
-    course2 = Course('Sistemas Operativos')
-    assert hash(course1) == hash(course2)
 
 def test_hash_different_students() -> None:
     course1 = Course('Desenvolvimento de Sistemas de Software')

@@ -12,9 +12,6 @@ class StudentError(Exception):
 
 class Student:
     def __init__(self, number: str, courses: None | dict[str, Course] = None) -> None:
-        if not number.isascii():
-            raise StudentError('Non-ASCII student number. Maybe caused by dubious data importation')
-
         self.__number = number
 
         if courses is None:
