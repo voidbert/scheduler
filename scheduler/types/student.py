@@ -51,4 +51,4 @@ class Student:
     def __repr__(self) -> str:
         ellipsis = EllipsisRepr()
         showable_courses = {id: ellipsis for id in self.__courses}
-        return f"Student(number={self.__number!r}, courses={showable_courses!r})"
+        return f'Student(number={self.__number!r}, courses={showable_courses!r})'
