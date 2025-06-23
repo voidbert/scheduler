@@ -1,6 +1,7 @@
 from __future__ import annotations
 import datetime
 import enum
+import re
 import typing
 
 from .room import Room, RoomError
@@ -122,3 +123,15 @@ class Shift:
             f'Shift(course=Course(id={self.__course.id!r}, ...), ' \
             f'shift_type={self.__shift_type}, number={self.__number!r}, day={self.__day}, ' \
             f'start={self.__start}, end={self.__end}, room={self.__room!r})'
+
+    @staticmethod
+    def parse_name(name: str) -> tuple[ShiftType, int]:
+        shift_types_regex = '|'.join(ShiftType)
+        match = re.match(rf'({shift_types_regex})([0-9]+)', name)
+
+        if match is None:
+            raise ShiftError(f'Failed to parse shift name: {name!r}')
+        else:
+            shift_type = ShiftType(match.group(1))
+            number = int(match.group(2))
+            return shift_type, number

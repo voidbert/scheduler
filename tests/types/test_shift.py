@@ -170,3 +170,19 @@ def test_str() -> None:
         'Shift(course=Course(id=\'Cálculo de Programas\', ...), shift_type=T, number=1, ' \
         'day=Monday, start=10:00:00, end=12:00:00, ' \
         'room=Room(building=\'CP1\', name_in_building=\'0.08\', capacity=200))'
+
+def test_parse_name_valid() -> None:
+    assert Shift.parse_name('T2') == (ShiftType.T, 2)
+    assert Shift.parse_name('TP1') == (ShiftType.TP, 1)
+    assert Shift.parse_name('PL10') == (ShiftType.PL, 10)
+    assert Shift.parse_name('OT5') == (ShiftType.OT, 5)
+
+def test_parse_name_invalid() -> None:
+    with pytest.raises(ShiftError):
+        Shift.parse_name('T')
+
+    with pytest.raises(ShiftError):
+        Shift.parse_name('TL2')
+
+    with pytest.raises(ShiftError):
+        Shift.parse_name('2')
