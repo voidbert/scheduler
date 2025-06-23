@@ -11,15 +11,9 @@ class StudentError(Exception):
     pass
 
 class Student:
-    def __init__(self, number: str, courses: None | dict[str, Course] = None) -> None:
+    def __init__(self, number: str) -> None:
         self.__number = number
-
-        if courses is None:
-            self.__courses = {}
-        elif any(course_id != course.id for course_id, course in courses.items()):
-            raise StudentError('courses is not a mapping between course IDs and courses')
-        else:
-            self.__courses = copy.copy(courses)
+        self.__courses: dict[str, Course] = {}
 
     def add_course(self, course: Course) -> None:
         if course.id in self.__courses:
@@ -43,12 +37,18 @@ class Student:
         return self.__number == other.number and list(self.__courses) == list(other.courses)
 
     def __copy__(self) -> Student:
-        return Student(self.__number, self.courses)
+        student = Student(self.__number)
+        for course in self.__courses.values():
+            student.add_course(course)
+
+        return student
 
     def __hash__(self) -> int:
         return hash(self.__number)
 
     def __repr__(self) -> str:
+        # NOTE: don't call __repr__ on __courses to avoid infinite recursion
         ellipsis = EllipsisRepr()
         showable_courses = {id: ellipsis for id in self.__courses}
+
         return f'Student(number={self.__number!r}, courses={showable_courses!r})'

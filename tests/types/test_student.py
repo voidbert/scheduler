@@ -13,25 +13,6 @@ def test_init_non_ascii() -> None:
     student = Student('Á100000')
     assert student.number == 'Á100000'
 
-def test_init_courses_empty() -> None:
-    student1 = Student('E5000')
-    student2 = Student('E5000', {})
-    assert student1 == student2
-
-def test_init_courses_encapsulation() -> None:
-    courses = {'Sistemas Operativos': Course('Sistemas Operativos')}
-    student = Student('A100000', courses)
-    assert student.courses == courses
-
-    courses['Sistemas Distribuídos'] = Course('Sistemas Distribuídos')
-    assert len(student.courses) == 1
-
-def test_init_courses_invalid() -> None:
-    courses = {'Sistemas Operativos': Course('Sistemas Distribuídos')}
-
-    with pytest.raises(StudentError):
-        Student('A100000', courses)
-
 def test_add_course_valid() -> None:
     courses = {'Sistemas Operativos': Course('Sistemas Operativos')}
     student = Student('A100000')
@@ -88,8 +69,13 @@ def test_eq_different_courses() -> None:
 def test_eq_different_same_courses_different_content() -> None:
     student1 = Student('A100000')
     student2 = Student('A100000')
-    student1.add_course(Course('Interface Pessoa-Máquina', {}))
-    student2.add_course(Course('Interface Pessoa-Máquina', {'A100000': student1}))
+
+    course1 = Course('Interface Pessoa-Máquina')
+    course2 = Course('Interface Pessoa-Máquina')
+    course2.add_student(student1)
+
+    student1.add_course(course1)
+    student2.add_course(course2)
     assert student1 == student2
 
 def test_copy_encapsulation() -> None:

@@ -93,7 +93,7 @@ class Shift:
             return False
 
         return (
-            self.__course == other.course and
+            self.__course.id == other.course.id and
             self.__shift_type == other.shift_type and
             self.__number == other.number and
             self.__day == other.day and
