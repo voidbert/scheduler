@@ -10,6 +10,9 @@ class Room:
         self.__name_in_building = name_in_building
         self.__capacity = capacity
 
+    def has_valid_capacity(self) -> bool:
+        return self.__capacity > 0
+
     @property
     def id(self) -> str:
         return self.name
@@ -36,9 +39,6 @@ class Room:
     @capacity.setter
     def capacity(self, capacity: int) -> None:
         self.__capacity = capacity
-
-    def has_valid_capacity(self) -> bool:
-        return self.__capacity > 0
 
     def __eq__(self, other: typing.Any) -> bool:
         if not isinstance(other, Room):

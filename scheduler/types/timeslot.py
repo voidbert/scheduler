@@ -18,6 +18,9 @@ class Timeslot:
         self.__start = start
         self.__end = end
 
+    def overlaps(self, other: Timeslot) -> bool:
+        return self.__day == other.day and self.__start < other.end and other.start < self.__end
+
     @property
     def day(self) -> Weekday:
         return self.__day
@@ -29,9 +32,6 @@ class Timeslot:
     @property
     def end(self) -> datetime.time:
         return self.__end
-
-    def overlaps(self, other: Timeslot) -> bool:
-        return self.__day == other.day and self.__start < other.end and other.start < self.__end
 
     def __eq__(self, other: typing.Any) -> bool:
         if not isinstance(other, Timeslot):
