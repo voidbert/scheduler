@@ -1,11 +1,11 @@
 from __future__ import annotations
-import datetime
+import copy
 import enum
 import re
 import typing
 
 from .room import Room, RoomError
-from .weekday import Weekday
+from .timeslot import Timeslot
 
 if typing.TYPE_CHECKING: # pragma: no cover
     from .course import Course
@@ -26,22 +26,35 @@ class Shift:
         course: Course,
         shift_type: ShiftType,
         number: int,
-        day: Weekday,
-        start: datetime.time,
-        end: datetime.time,
+        timeslots: list[Timeslot],
         room: Room,
     ) -> None:
-
-        if end <= start:
-            raise ShiftError('Shift\'s starting time must precede its ending time')
-
         self.__course = course
         self.__shift_type = shift_type
         self.__number = number
-        self.__day = day
-        self.__start = start
-        self.__end = end
+        self.__timeslots: list[Timeslot] = []
         self.__room = room
+
+        for timeslot in timeslots:
+            self.add_timeslot(timeslot)
+
+        if not self.__timeslots:
+            raise ShiftError('At least one shift timeslot is required')
+
+    def add_timeslot(self, timeslot: Timeslot) -> None:
+        for t in self.__timeslots:
+            if t.overlaps(timeslot):
+                raise ShiftError('Overlapping timeslots in shift')
+
+        self.__timeslots.append(timeslot)
+
+    def overlaps(self, other: Shift) -> bool:
+        for self_timeslot in self.__timeslots:
+            for other_timeslot in other.timeslots:
+                if self_timeslot.overlaps(other_timeslot):
+                    return True
+
+        return False
 
     @property
     def id(self) -> str:
@@ -64,16 +77,8 @@ class Shift:
         return f'{self.__shift_type}{self.__number}'
 
     @property
-    def day(self) -> Weekday:
-        return self.__day
-
-    @property
-    def start(self) -> datetime.time:
-        return self.__start
-
-    @property
-    def end(self) -> datetime.time:
-        return self.__end
+    def timeslots(self) -> list[Timeslot]:
+        return copy.copy(self.__timeslots)
 
     @property
     def room(self) -> Room:
@@ -86,9 +91,6 @@ class Shift:
         except RoomError as e:
             raise ShiftError('Shift\'s room doesn\'t have a capacity defined') from e
 
-    def overlaps(self, other: Shift) -> bool:
-        return self.__day == other.day and self.__start < other.end and other.start < self.__end
-
     def __eq__(self, other: typing.Any) -> bool:
         if not isinstance(other, Shift):
             return False
@@ -97,9 +99,7 @@ class Shift:
             self.__course.id == other.course.id and
             self.__shift_type == other.shift_type and
             self.__number == other.number and
-            self.__day == other.day and
-            self.__start == other.start and
-            self.__end == other.end and
+            self.__timeslots == other.timeslots and
             self.__room == other.room
         )
 
@@ -108,9 +108,7 @@ class Shift:
             self.__course,
             self.__shift_type,
             self.__number,
-            self.__day,
-            self.__start,
-            self.__end,
+            self.__timeslots,
             self.__room
         )
 
@@ -121,8 +119,8 @@ class Shift:
         # NOTE: don't call __repr__ on __course to avoid infinite recursion
         return \
             f'Shift(course=Course(id={self.__course.id!r}, ...), ' \
-            f'shift_type={self.__shift_type}, number={self.__number!r}, day={self.__day}, ' \
-            f'start={self.__start}, end={self.__end}, room={self.__room!r})'
+            f'shift_type={self.__shift_type}, number={self.__number!r}, ' \
+            f'timeslots={self.__timeslots}, room={self.__room!r})'
 
     @staticmethod
     def parse_name(name: str) -> tuple[ShiftType, int]:

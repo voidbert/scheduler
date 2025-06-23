@@ -67,9 +67,7 @@ class Course:
                 course,
                 shift.shift_type,
                 shift.number,
-                shift.day,
-                shift.start,
-                shift.end,
+                shift.timeslots,
                 shift.room
             ))
 

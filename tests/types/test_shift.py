@@ -7,6 +7,7 @@ import pytest
 from scheduler.types.course import Course
 from scheduler.types.room import Room
 from scheduler.types.shift import Shift, ShiftError, ShiftType
+from scheduler.types.timeslot import Timeslot
 from scheduler.types.weekday import Weekday
 
 def test_shift_type_repr() -> None:
@@ -24,9 +25,7 @@ def initialize_reference_shift() -> None:
         Course('Cálculo de Programas'),
         ShiftType.T,
         1,
-        Weekday.MONDAY,
-        datetime.time(10, 0),
-        datetime.time(12, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(10, 0), datetime.time(12, 0))],
         Room('CP1', '0.08', 200)
     )
 
@@ -35,28 +34,86 @@ def shift_with(shift: Shift, property_name: str, property_value: typing.Any) -> 
     setattr(shift2, f'_Shift__{property_name}', property_value)
     return shift2
 
-def test_init() -> None:
+def test_init_valid() -> None:
     assert reference_shift.course == Course('Cálculo de Programas')
     assert reference_shift.shift_type == ShiftType.T
     assert reference_shift.number == 1
-    assert reference_shift.day == Weekday.MONDAY
-    assert reference_shift.start == datetime.time(10, 0)
-    assert reference_shift.end == datetime.time(12, 0)
+    assert reference_shift.timeslots == \
+        [Timeslot(Weekday.MONDAY, datetime.time(10, 0), datetime.time(12, 0))]
     assert reference_shift.room == Room('CP1', '0.08', 200)
 
-def test_init_equal_start_end() -> None:
+def test_init_overlap() -> None:
     with pytest.raises(ShiftError):
-        copy.copy(shift_with(reference_shift, 'start', datetime.time(12, 0)))
+        Shift(
+            Course('Cálculo de Programas'),
+            ShiftType.T,
+            1,
+            [
+                Timeslot(Weekday.MONDAY, datetime.time(10, 0), datetime.time(12, 0)),
+                Timeslot(Weekday.MONDAY, datetime.time(11, 0), datetime.time(12, 0))
+            ],
+            Room('CP1', '0.08', 200)
+        )
 
-def test_init_start_after_end() -> None:
+def test_init_no_timeslots() -> None:
     with pytest.raises(ShiftError):
-        copy.copy(shift_with(reference_shift, 'start', datetime.time(12, 30)))
+        Shift(Course('Cálculo de Programas'), ShiftType.T, 1, [], Room('CP1', '0.08', 200))
+
+def test_init_encapsulation() -> None:
+    slots = [
+        Timeslot(Weekday.MONDAY, datetime.time(10, 0), datetime.time(12, 0)),
+        Timeslot(Weekday.FRIDAY, datetime.time(11, 0), datetime.time(12, 0))
+    ]
+
+    shift = Shift(Course('Cálculo de Programas'), ShiftType.T, 1, slots, Room('CP1', '0.08', 200))
+    assert len(shift.timeslots) == 2
+
+    slots.append(Timeslot(Weekday.WEDNESDAY, datetime.time(11, 0), datetime.time(12, 0)))
+
+    assert len(shift.timeslots) == 2
+
+def test_add_timeslot_successful() -> None:
+    reference_shift.add_timeslot(Timeslot(Weekday.MONDAY, datetime.time(7, 0), datetime.time(9, 0)))
+    assert len(reference_shift.timeslots) == 2
+
+def test_add_timeslot_unsuccessful() -> None:
+    with pytest.raises(ShiftError):
+        reference_shift.add_timeslot(
+            Timeslot(Weekday.MONDAY, datetime.time(11, 0), datetime.time(12, 0))
+        )
+
+def test_overlaps() -> None:
+    shift = Shift(
+        Course('Cálculo de Programas'),
+        ShiftType.T,
+        1,
+        [
+            Timeslot(Weekday.MONDAY, datetime.time(8, 0), datetime.time(9, 0)),
+            Timeslot(Weekday.MONDAY, datetime.time(13, 0), datetime.time(14, 0))
+        ],
+        Room('CP1', '0.08', 200)
+    )
+
+    assert not shift.overlaps(reference_shift)
+    assert not reference_shift.overlaps(shift)
+
+    reference_shift.add_timeslot(Timeslot(Weekday.MONDAY, datetime.time(7, 0), datetime.time(9, 0)))
+
+    assert shift.overlaps(reference_shift)
+    assert reference_shift.overlaps(shift)
 
 def test_id() -> None:
     assert reference_shift.id == 'Cálculo de Programas T1'
 
 def test_name() -> None:
     assert reference_shift.name == 'T1'
+
+def test_timeslots_encapsulation() -> None:
+    reference_shift.timeslots.append(
+        Timeslot(Weekday.FRIDAY, datetime.time(16, 0), datetime.time(18, 0))
+    )
+
+    assert len(reference_shift.timeslots) == 1
 
 def test_capacity_valid() -> None:
     assert reference_shift.capacity == 200
@@ -65,37 +122,6 @@ def test_capacity_invalid() -> None:
     invalid_capacity_shift = shift_with(reference_shift, 'room', Room('CP1', '0.08'))
     with pytest.raises(ShiftError):
         invalid_capacity_shift.capacity
-
-def test_overlaps_same() -> None:
-    assert reference_shift.overlaps(reference_shift)
-
-def test_overlaps_no_overlap() -> None:
-    other = shift_with(
-        shift_with(reference_shift, 'end', datetime.time(15, 0)), 'start', datetime.time(13, 0)
-    )
-
-    assert not reference_shift.overlaps(other)
-    assert not other.overlaps(reference_shift)
-
-def test_overlaps_different_day() -> None:
-    other = shift_with(reference_shift, 'day', Weekday.WEDNESDAY)
-    assert not reference_shift.overlaps(other)
-
-def test_overlaps_sequence() -> None:
-    other = shift_with(
-        shift_with(reference_shift, 'end', datetime.time(14, 0)), 'start', datetime.time(12, 0)
-    )
-
-    assert not reference_shift.overlaps(other)
-    assert not other.overlaps(reference_shift)
-
-def test_overlaps_overlap() -> None:
-    other = shift_with(
-        shift_with(reference_shift, 'end', datetime.time(13, 30)), 'start', datetime.time(11, 30)
-    )
-
-    assert reference_shift.overlaps(other)
-    assert other.overlaps(reference_shift)
 
 def test_eq_none() -> None:
     assert reference_shift != None
@@ -115,17 +141,8 @@ def test_eq_different_type() -> None:
 def test_eq_different_number() -> None:
     assert reference_shift != shift_with(reference_shift, 'number', 2)
 
-def test_eq_different_day() -> None:
-    assert reference_shift != shift_with(reference_shift, 'day', Weekday.THURSDAY)
-
-def test_eq_same_start() -> None:
-    assert reference_shift == shift_with(reference_shift, 'start', datetime.time(10))
-
-def test_eq_different_start() -> None:
-    assert reference_shift != shift_with(reference_shift, 'start', datetime.time(10, 5))
-
-def test_eq_different_end() -> None:
-    assert reference_shift != shift_with(reference_shift, 'end', datetime.time(12, 30))
+def test_eq_different_timeslots() -> None:
+    assert reference_shift != shift_with(reference_shift, 'timeslots', [])
 
 def test_eq_different_room() -> None:
     assert reference_shift != shift_with(reference_shift, 'room', Room('CP1', '0.08'))
@@ -147,14 +164,8 @@ def test_hash_different_type() -> None:
 def test_hash_different_number() -> None:
     assert hash(reference_shift) != hash(shift_with(reference_shift, 'number', 2))
 
-def test_hash_different_day() -> None:
-    assert hash(reference_shift) == hash(shift_with(reference_shift, 'day', Weekday.THURSDAY))
-
-def test_hash_different_start() -> None:
-    assert hash(reference_shift) == hash(shift_with(reference_shift, 'start', datetime.time(10, 5)))
-
-def test_hash_different_end() -> None:
-    assert hash(reference_shift) == hash(shift_with(reference_shift, 'end', datetime.time(12, 30)))
+def test_hash_different_timeslots() -> None:
+    assert hash(reference_shift) == hash(shift_with(reference_shift, 'timeslots', []))
 
 def test_hash_different_room() -> None:
     assert hash(reference_shift) == hash(shift_with(reference_shift, 'room', Room('CP1', '0.08')))
@@ -162,13 +173,13 @@ def test_hash_different_room() -> None:
 def test_repr() -> None:
     assert repr(reference_shift) == \
         'Shift(course=Course(id=\'Cálculo de Programas\', ...), shift_type=T, number=1, ' \
-        'day=Monday, start=10:00:00, end=12:00:00, ' \
+        'timeslots=[Timeslot(day=Monday, start=\'10:00:00\', end=\'12:00:00\')], ' \
         'room=Room(building=\'CP1\', name_in_building=\'0.08\', capacity=200))'
 
 def test_str() -> None:
     assert str(reference_shift) == \
         'Shift(course=Course(id=\'Cálculo de Programas\', ...), shift_type=T, number=1, ' \
-        'day=Monday, start=10:00:00, end=12:00:00, ' \
+        'timeslots=[Timeslot(day=Monday, start=\'10:00:00\', end=\'12:00:00\')], ' \
         'room=Room(building=\'CP1\', name_in_building=\'0.08\', capacity=200))'
 
 def test_parse_name_valid() -> None:

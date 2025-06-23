@@ -4,9 +4,10 @@ import datetime
 import pytest
 
 from scheduler.types.course import Course, CourseError
+from scheduler.types.room import Room
 from scheduler.types.shift import Shift, ShiftType
 from scheduler.types.student import Student
-from scheduler.types.room import Room
+from scheduler.types.timeslot import Timeslot
 from scheduler.types.weekday import Weekday
 
 def test_init_name_id() -> None:
@@ -21,9 +22,7 @@ def test_shifts_encapsulation() -> None:
         Course('Sistemas Operativos'),
         ShiftType.T,
         2,
-        Weekday.MONDAY,
-        datetime.time(10, 0),
-        datetime.time(12, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '0.08', 200)
     )
 
@@ -42,9 +41,7 @@ def test_add_shift_valid() -> None:
             course,
             ShiftType.T,
             2,
-            Weekday.MONDAY,
-            datetime.time(10, 0),
-            datetime.time(12, 0),
+            [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
             Room('CP1', '0.08', 200)
         )
     }
@@ -58,9 +55,7 @@ def test_add_shift_double() -> None:
         course,
         ShiftType.T,
         2,
-        Weekday.MONDAY,
-        datetime.time(10, 0),
-        datetime.time(12, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '0.08', 200)
     )
 
@@ -74,18 +69,14 @@ def test_add_shift_triple() -> None:
         course,
         ShiftType.T,
         1,
-        Weekday.MONDAY,
-        datetime.time(10, 0),
-        datetime.time(12, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '0.04', 150)
     )
     shift2 = Shift(
         course,
         ShiftType.T,
         2,
-        Weekday.MONDAY,
-        datetime.time(10, 0),
-        datetime.time(12, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '0.08', 200)
     )
 
@@ -103,9 +94,7 @@ def test_add_shift_other_course() -> None:
             Course('Sistemas Operativos'), # Equal, but not the same object
             ShiftType.T,
             2,
-            Weekday.MONDAY,
-            datetime.time(10, 0),
-            datetime.time(12, 0),
+            [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
             Room('CP1', '0.08', 200)
         )
     }
@@ -161,9 +150,7 @@ def test_eq_different_shifts() -> None:
         course2,
         ShiftType.PL,
         1,
-        Weekday.MONDAY,
-        datetime.time(9, 0),
-        datetime.time(11, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '1.10', 45)
     ))
     assert course1 != course2
@@ -193,9 +180,7 @@ def test_copy_encapsulation_shifts() -> None:
         course1,
         ShiftType.PL,
         1,
-        Weekday.MONDAY,
-        datetime.time(9, 0),
-        datetime.time(11, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '1.10', 45)
     ))
 
@@ -204,9 +189,7 @@ def test_copy_encapsulation_shifts() -> None:
         course2,
         ShiftType.PL,
         2,
-        Weekday.MONDAY,
-        datetime.time(9, 0),
-        datetime.time(11, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP2', '1.12', 45)
     ))
 
@@ -244,9 +227,7 @@ def test_hash_different_shifts() -> None:
         course2,
         ShiftType.PL,
         1,
-        Weekday.MONDAY,
-        datetime.time(9, 0),
-        datetime.time(11, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '1.10', 45)
     ))
     assert hash(course1) == hash(course2)
@@ -267,9 +248,7 @@ def test_repr_shifts() -> None:
         course,
         ShiftType.PL,
         1,
-        Weekday.MONDAY,
-        datetime.time(9, 0),
-        datetime.time(11, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '1.10', 45)
     ))
 
@@ -292,9 +271,7 @@ def test_str_shifts() -> None:
         course,
         ShiftType.PL,
         1,
-        Weekday.MONDAY,
-        datetime.time(9, 0),
-        datetime.time(11, 0),
+        [Timeslot(Weekday.MONDAY, datetime.time(9, 0), datetime.time(11, 0))],
         Room('CP1', '1.10', 45)
     ))
 
