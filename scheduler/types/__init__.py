@@ -2,6 +2,7 @@ from .course import Course, CourseError
 from .room import Room, RoomError
 from .shift import Shift, ShiftError, ShiftType
 from .student import Student, StudentError
+from .timeslot import Timeslot
 from .weekday import Weekday
 
 __all__ = [
@@ -14,5 +15,6 @@ __all__ = [
     'ShiftType',
     'Student',
     'StudentError',
+    'Timeslot',
     'Weekday'
 ]
