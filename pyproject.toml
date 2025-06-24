@@ -31,8 +31,8 @@
         "Typing :: Typed"
     ]
 
-    dependencies = ["pypdf"]
-    optional-dependencies.dev = ["pytest", "coverage"]
+    dependencies = ["pypdf", "requests"]
+    optional-dependencies.dev = ["pytest", "coverage", "types-requests"]
 
 [project.urls]
     Homepage = "https://github.com/voidbert/scheduler"
