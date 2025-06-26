@@ -31,16 +31,27 @@ classifiers = [
     "Typing :: Typed"
 ]
 
-optional-dependencies.dev = ["mypy"]
+optional-dependencies.dev = ["coverage", "mypy", "pytest"]
 
 [project.urls]
 Homepage = "https://github.com/voidbert/scheduler"
 Repository = "https://github.com/voidbert/scheduler"
 "Bug Tracker" = "https://github.com/voidbert/scheduler/issues"
 
+[tool.coverage]
+    run.branch = true
+    run.data_file = ".coverage"
+    run.command_line = "-m pytest"
+    run.source = ["scheduler/"]
+    html.directory = "coverage"
+
 [tool.mypy]
 packages = ["scheduler"]
 strict = true
+
+[tool.pytest.ini_options]
+    testpaths = ["tests"]
+    pythonpath = ["."]
 
 [tool.setuptools]
 packages = ['scheduler']
