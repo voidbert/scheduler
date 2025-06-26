@@ -1,0 +1,42 @@
+# Scheduler
+
+A schedule generator for UMinho's Software Engineering course, based on integer programming.
+
+# Setup
+
+Start by cloning this repository, and then create a Python virtual environment:
+
+```
+$ git clone https://github.com/voidbert/scheduler.git
+$ python -m venv .venv
+```
+
+To run the project, do:
+
+```
+$ source .venv/bin/activate
+$ pip install --editable .
+$ scheduler
+```
+
+To exit the virtual environment, you can run:
+
+```
+$ deactivate
+```
+
+# Development
+
+To setup the development environment, inside the virtual environment, start by installing the
+development packages:
+
+```
+$ pip install --editable .[dev]
+```
+
+The code can also be type-checked with `mypy`. Type annotations are mandatory (`strict` mode is
+used).
+
+```
+$ mypy
+```

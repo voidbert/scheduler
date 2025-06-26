@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scheduler"
+description = "UMinho's Software Engineering schedule generator"
+version = "0.0.1"
+
+authors = [
+    { name = "Humberto Gomes", email = "humbertogilgomes@protonmail.com" },
+]
+
+readme = "README.md"
+license = { file = "LICENSE" }
+
+requires-python = ">= 3.12"
+
+keywords = ["scheduler", "milp", "integer-programming"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Education",
+    "Topic :: Office/Business :: Scheduling",
+    "Topic :: Software Development :: Compilers",
+    "Typing :: Typed"
+]
+
+optional-dependencies.dev = ["mypy"]
+
+[project.urls]
+Homepage = "https://github.com/voidbert/scheduler"
+Repository = "https://github.com/voidbert/scheduler"
+"Bug Tracker" = "https://github.com/voidbert/scheduler/issues"
+
+[tool.mypy]
+packages = ["scheduler"]
+strict = true
+
+[tool.setuptools]
+packages = ['scheduler']
+
+[project.scripts]
+scheduler = "scheduler.__main__:main"
