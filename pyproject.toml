@@ -46,7 +46,7 @@ Repository = "https://github.com/voidbert/scheduler"
     html.directory = "coverage"
 
 [tool.mypy]
-packages = ["scheduler"]
+packages = ["scheduler", "tests"]
 strict = true
 
 [tool.pytest.ini_options]
