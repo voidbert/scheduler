@@ -19,3 +19,7 @@ dist/
 
 # mypy
 .mypy_cache/
+
+# sphinx
+docs/build
+docs/source

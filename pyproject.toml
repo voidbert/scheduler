@@ -31,7 +31,14 @@ classifiers = [
     "Typing :: Typed"
 ]
 
-optional-dependencies.dev = ["coverage", "mypy", "pytest"]
+optional-dependencies.dev = [
+    "coverage",
+    "mypy",
+    "pytest",
+    "sphinx",
+    "sphinx-autodoc-typehints",
+    "sphinx-rtd-theme"
+]
 
 [project.urls]
 Homepage = "https://github.com/voidbert/scheduler"
