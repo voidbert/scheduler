@@ -2,6 +2,8 @@ import enum
 
 @enum.unique
 class Weekday(enum.StrEnum):
+    '''A day of the week in which there can be classes (Saturday and Sunday are excluded).'''
+
     MONDAY = 'Monday'
     TUESDAY = 'Tuesday'
     WEDNESDAY = 'Wednesday'
