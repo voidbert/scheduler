@@ -7,10 +7,13 @@ import typing
 from .timeslot import Timeslot
 
 class ShiftError(Exception):
+    '''Type of exception thrown by :class:`Shift`.'''
     pass
 
 @enum.unique
 class ShiftType(enum.StrEnum):
+    '''Type of a :class:`Shift`.'''
+
     T = 'T'
     TP = 'TP'
     PL = 'PL'
@@ -20,6 +23,20 @@ class ShiftType(enum.StrEnum):
         return f'ShiftType.{self}'
 
 class Shift:
+    '''
+    Subdivision of a :class:`~.course.Course`, to allow for more enrolled students. A shift is
+    characterized by its type, its number, and the timeslots that compose it. A shift may be
+    composed of more than one timeslot because, for example, it can be broken in multiple classes
+    across different days.
+
+    :param shift_type: Type of the shift.
+    :param number:     Number of the shift.
+    :param timeslots:  List of timeslots of the shift. No timeslots will be copied. When ``None``
+                       (default), no timeslots will be added to the shift.
+
+    :raises ShiftError: ``timeslots`` overlap.
+    '''
+
     def __init__(
             self,
             shift_type: ShiftType,
@@ -36,6 +53,20 @@ class Shift:
                 self.add_timeslot(timeslot)
 
     def add_timeslot(self, timeslot: Timeslot) -> None:
+        '''
+        Adds a timeslot to the shift.
+
+        :param timeslot: Timeslot to be added to the shift.
+
+        :raises ShiftError: ``timeslot`` overlaps with at least one of the shift's timeslots.
+
+        >>> shift = Shift(ShiftType.T, 2)
+        >>> timeslot = Timeslot(Weekday.MONDAY, time(10, 0), time(12, 0), Room('CP1', '0.04'))
+        >>> shift.add_timeslot(timeslot)
+        >>> shift.timeslots
+        [Timeslot(day=Weekday.MONDAY, start=datetime.time(10, 0), ...)]
+        '''
+
         for t in self.__timeslots:
             if t.overlaps(timeslot):
                 raise ShiftError('Overlapping timeslots in shift')
@@ -43,6 +74,13 @@ class Shift:
         self.__timeslots.append(timeslot)
 
     def overlaps(self, other: Shift) -> bool:
+        '''
+        Checks if at least one of the timeslots of the shift overlaps with any of the timeslots in
+        ``other``.
+
+        :param other: Shift to test for overlapping timeslots.
+        '''
+
         for self_timeslot in self.__timeslots:
             for other_timeslot in other.timeslots:
                 if self_timeslot.overlaps(other_timeslot):
@@ -52,26 +90,69 @@ class Shift:
 
     @property
     def id(self) -> str:
+        '''
+        Identifier of the shift in the context of its course. Same as :attr:`name`.
+
+        **CAUTION**: This is a weak identifier. To fully identify a shift, append it to the
+        identifier of the :class:`Course` the shift belongs to.
+        '''
+
         return self.name
 
     @property
     def shift_type(self) -> ShiftType:
+        '''
+        Type of the shift.
+
+        >>> Shift(ShiftType.T, 2).shift_type
+        ShiftType.T
+        '''
+
         return self.__shift_type
 
     @property
     def number(self) -> int:
+        '''
+        Number of the shift.
+
+        >>> Shift(ShiftType.T, 2).number
+        2
+        '''
+
         return self.__number
 
     @property
     def name(self) -> str:
+        '''
+        Name of the shift. Only valid in the context of its course.
+
+        >>> Shift(ShiftType.T, 2).name
+        'T2'
+        '''
+
         return f'{self.__shift_type}{self.__number}'
 
     @property
     def timeslots(self) -> list[Timeslot]:
+        '''
+        List of timeslots that compose the shift.
+
+        **A copy of the list will be returned**, but the references to the timeslots will not.
+
+        >>> Student('A104000', [Course('Software Labs II')]).courses
+        {'Software Labes III': Course(name='Software Labs II', shifts={})}
+        '''
         return copy.copy(self.__timeslots)
 
     @property
     def capacity(self) -> None | int:
+        '''
+        Number of students that can be assigned to the shift. It is the capacity of the smallest
+        room the shift has classes in. The value of this property is ``None`` when the shift has no
+        timeslots, or when the room of one of the timeslots has an unknown
+        :attr:`~.room.Room.capacity`.
+        '''
+
         if not self.__timeslots or any(timeslot.capacity is None for timeslot in self.__timeslots):
             return None
         else:
@@ -105,6 +186,16 @@ class Shift:
 
     @staticmethod
     def parse_name(name: str) -> tuple[ShiftType, int]:
+        '''
+        Parses the name of a shift, decomposing it into a :class:`ShiftType` and the shift's number.
+
+        :param name: Shift name to parse.
+        :raises ShiftError: Invalid shift name.
+
+        >>> Shift.parse_name('TP4')
+        (ShiftType.TP, 4)
+        '''
+
         shift_types_regex = '|'.join(ShiftType)
         match = re.match(rf'({shift_types_regex})([0-9]+)', name)
 
