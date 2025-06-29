@@ -89,17 +89,6 @@ class Shift:
         return False
 
     @property
-    def id(self) -> str:
-        '''
-        Identifier of the shift in the context of its course. Same as :attr:`name`.
-
-        **CAUTION**: This is a weak identifier. To fully identify a shift, append it to the
-        identifier of the :class:`Course` the shift belongs to.
-        '''
-
-        return self.name
-
-    @property
     def shift_type(self) -> ShiftType:
         '''
         Type of the shift.
@@ -124,7 +113,9 @@ class Shift:
     @property
     def name(self) -> str:
         '''
-        Name of the shift. Only valid in the context of its course.
+        Name of the shift. Can be used to identify a shift in the context of its course (weak
+        identifier). Append this name to the the :attr:`~.course.Course.name` of the course for a
+        full identifier.
 
         >>> Shift(ShiftType.T, 2).name
         'T2'
@@ -174,7 +165,7 @@ class Shift:
         return Shift(self.__shift_type, self.__number, self.__timeslots)
 
     def __hash__(self) -> int:
-        return hash(self.id)
+        return hash(self.name)
 
     def __repr__(self) -> str:
         return (

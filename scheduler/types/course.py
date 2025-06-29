@@ -18,7 +18,8 @@ class Course:
     :param shifts: List of shifts of the course. No shifts will be copied. When ``None`` (default),
                    no shifts will be added to the course.
 
-    :raises CourseError: ``shifts`` has more than one shift with the same :attr:`~.shift.Shift.id`.
+    :raises CourseError: ``shifts`` has more than one shift with the same
+                         :attr:`~.shift.Shift.name`.
     '''
 
     def __init__(self, name: str, shifts: None | list[Shift] = None) -> None:
@@ -35,7 +36,8 @@ class Course:
 
         :param shift: Shift to be added to the course.
 
-        :raises CourseError: The course already has a shift with the same :attr:`~.shift.Shift.id`.
+        :raises CourseError: The course already has a shift with the same
+                             :attr:`~.shift.Shift.name`.
 
         >>> course = Course('Computer Graphics')
         >>> course.add_shift(Shift(ShiftType.PL, 1))
@@ -43,20 +45,15 @@ class Course:
         {'PL1': Shift(shift_type=ShiftType.PL, number=1, timeslots=[])}
         '''
 
-        if shift.id in self.__shifts:
+        if shift.name in self.__shifts:
             raise CourseError('Tried to add a shift to a course more than once')
         else:
-            self.__shifts[shift.id] = shift
-
-    @property
-    def id(self) -> str:
-        '''Identifier (the full name) of the course. Same as :attr:`name`.'''
-        return self.__name
+            self.__shifts[shift.name] = shift
 
     @property
     def name(self) -> str:
         '''
-        The full name of the course.
+        The full name of the course. Can be used to identify the course.
 
         >>> Course('Software Labs I').name
         'Software Labs I'
@@ -67,8 +64,8 @@ class Course:
     @property
     def shifts(self) -> dict[str, Shift]:
         '''
-        Association between shift identifiers (:attr:`~.course.Shift.id`) and the shifts that are
-        part of the course.
+        Association between shift names (:attr:`~.course.Shift.name`) and the shifts that are part
+        of the course.
 
         **A copy of the dictionary will be returned**, but the references to the shifts will not.
 
@@ -88,7 +85,7 @@ class Course:
         return Course(self.__name, list(self.__shifts.values()))
 
     def __hash__(self) -> int:
-        return hash(self.id)
+        return hash(self.name)
 
     def __repr__(self) -> str:
         return f'Course(name={self.__name!r}, shifts={self.__shifts!r})'

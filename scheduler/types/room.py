@@ -24,14 +24,10 @@ class Room:
         self.capacity = capacity
 
     @property
-    def id(self) -> str:
-        '''Identifier of the room. Same as :attr:`name`.'''
-        return self.name
-
-    @property
     def name(self) -> str:
         '''
-        Full name of the room, containing both the building and room names.
+        Full name of the room, containing both the building and room names. Can be used to identify
+        the room.
 
         >>> Room('CP1', '0.08').name
         'CP1 0.08'
@@ -106,7 +102,7 @@ class Room:
         return Room(self.__building, self.__name_in_building, self.__capacity)
 
     def __hash__(self) -> int:
-        return hash(self.id)
+        return hash(self.name)
 
     def __repr__(self) -> str:
         return (

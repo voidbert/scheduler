@@ -72,10 +72,6 @@ def test_add_shift_invalid_different() -> None:
     with pytest.raises(CourseError):
         course.add_shift(Shift(ShiftType.TP, 1))
 
-def test_id() -> None:
-    assert Course('Elementos de Probabilidades e Teoria de Números').id == \
-        'Elementos de Probabilidades e Teoria de Números'
-
 def test_shifts_encapsulation() -> None:
     course = Course('Programação Imperativa', [Shift(ShiftType.TP, 1)])
     shifts = course.shifts

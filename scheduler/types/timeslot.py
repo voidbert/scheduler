@@ -113,7 +113,7 @@ class Timeslot:
             self.__day == other.day and
             self.__start == other.start and
             self.__end == other.end and
-            self.__room.id == other.room.id
+            self.__room.name == other.room.name
         )
 
     def __copy__(self) -> Timeslot:

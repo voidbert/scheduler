@@ -117,9 +117,6 @@ def test_overlaps_multiple_overlapping() -> None:
     slot3 = Timeslot(Weekday.FRIDAY, datetime.time(10, 0), datetime.time(12, 0), Room('Ed 7', 'A1'))
     assert Shift(ShiftType.PL, 1, [slot1, slot2]).overlaps(Shift(ShiftType.T, 2, [slot3]))
 
-def test_id() -> None:
-    assert Shift(ShiftType.PL, 1, []).id == 'PL1'
-
 def test_name() -> None:
     assert Shift(ShiftType.T, 2, []).name == 'T2'
 

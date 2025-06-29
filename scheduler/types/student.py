@@ -18,7 +18,7 @@ class Student:
                     ``None`` (default), no courses will be added to the student.
 
     :raises StudentError: ``courses`` has more than one course with the same
-                           :attr:`~.course.Course.id`.
+                           :attr:`~.course.Course.name`.
     '''
 
     def __init__(self, number: str, courses: None | list[Course] = None) -> None:
@@ -36,7 +36,7 @@ class Student:
         :param course: Course to enroll the student in. It will not be copied.
 
         :raises StudentError: The student is already enrolled in a course with the same
-                              :attr:`~.course.Course.id`.
+                              :attr:`~.course.Course.name`.
 
         >>> student = Student('A10400')
         >>> student.add_course(Course('Software Labs II'))
@@ -44,15 +44,15 @@ class Student:
         {'Software Labes II': Course(name='Software Labs II', shifts={})}
         '''
 
-        if course.id in self.__courses:
+        if course.name in self.__courses:
             raise StudentError('Tried to add a course to a student more than once')
 
-        self.__courses[course.id] = course
+        self.__courses[course.name] = course
 
     @property
     def number(self) -> str:
         '''
-        Mechanographic number of the student, that identifies it.
+        Mechanographic number of the student. Can be used to identify a student.
 
         >>> Student('A104000').number
         'A104000'
@@ -63,8 +63,8 @@ class Student:
     @property
     def courses(self) -> dict[str, Course]:
         '''
-        Association between course identifiers (:attr:`~.course.Course.id`) and the courses the
-        student is enrolled in.
+        Association between course names (:attr:`~.course.Course.name`) and the courses the student
+        is enrolled in.
 
         **A copy of the dictionary will be returned**, but the references to the courses will not.
 

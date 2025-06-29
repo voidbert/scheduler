@@ -26,9 +26,6 @@ def test_init_invalid_capacity_negative() -> None:
     with pytest.raises(RoomError):
         Room('Ed 7', '1.04', -1)
 
-def test_id() -> None:
-    assert Room('Ed 7', '1.04').id == 'Ed 7 1.04'
-
 def test_name() -> None:
     assert Room('Ed 7', '1.04').name == 'Ed 7 1.04'
 
