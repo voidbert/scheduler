@@ -75,9 +75,10 @@ def test_add_course_invalid_different() -> None:
 def test_courses_encapsulation() -> None:
     student = Student('A100', [])
     courses = student.courses
-    courses['Computação Gráfica'] = Course('Computação Gráfica')
 
-    assert not student.courses
+    course = Course('Computação Gráfica')
+    student.add_course(course)
+    assert courses[course.name] == course
 
 def test_eq_none() -> None:
     assert Student('A100') != None

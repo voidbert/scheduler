@@ -1,6 +1,6 @@
 from __future__ import annotations
+from collections.abc import Mapping
 import copy
-import typing
 
 from .course import Course
 
@@ -14,11 +14,12 @@ class Student:
     courses they are enrolled in.
 
     :param number:  Mechanographic number of the student, that identifies it.
-    :param courses: List of courses the student is enrolled in. No courses will be copied. When
-                    ``None`` (default), no courses will be added to the student.
+    :param courses: List of courses the student is enrolled in.
 
     :raises StudentError: ``courses`` has more than one course with the same
                            :attr:`~.course.Course.name`.
+
+    See :ref:`this <encapsulation>` to learn how objects and collections are copied.
     '''
 
     def __init__(self, number: str, courses: None | list[Course] = None) -> None:
@@ -33,7 +34,7 @@ class Student:
         '''
         Adds a course to the list of courses the student is enrolled in.
 
-        :param course: Course to enroll the student in. It will not be copied.
+        :param course: Course to enroll the student in.
 
         :raises StudentError: The student is already enrolled in a course with the same
                               :attr:`~.course.Course.name`.
@@ -41,7 +42,9 @@ class Student:
         >>> student = Student('A10400')
         >>> student.add_course(Course('Software Labs II'))
         >>> student.courses
-        {'Software Labes II': Course(name='Software Labs II', shifts={})}
+        {'Software Labs II': Course(name='Software Labs II', shifts={})}
+
+        See :ref:`this <encapsulation>` to learn how objects and collections are copied.
         '''
 
         if course.name in self.__courses:
@@ -61,20 +64,20 @@ class Student:
         return self.__number
 
     @property
-    def courses(self) -> dict[str, Course]:
+    def courses(self) -> Mapping[str, Course]:
         '''
         Association between course names (:attr:`~.course.Course.name`) and the courses the student
         is enrolled in.
 
-        **A copy of the dictionary will be returned**, but the references to the courses will not.
-
         >>> Student('A104000', [Course('Software Labs II')]).courses
-        {'Software Labes II': Course(name='Software Labs II', shifts={})}
+        {'Software Labs II': Course(name='Software Labs II', shifts={})}
+
+        See :ref:`this <encapsulation>` to learn how objects and collections are copied.
         '''
 
-        return copy.copy(self.__courses)
+        return self.__courses
 
-    def __eq__(self, other: typing.Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Student):
             return False
 

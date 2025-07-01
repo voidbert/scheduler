@@ -1,6 +1,5 @@
 from __future__ import annotations
 import datetime
-import typing
 
 from .room import Room
 from .weekday import Weekday
@@ -18,9 +17,11 @@ class Timeslot:
     :param day:   Day of the class.
     :param start: Starting hour of the class.
     :param end:   Ending hour of the class.
-    :param room:  Room where the class is taught. It will not be copied.
+    :param room:  Room where the class is taught.
 
     :raises TimeslotError: If and only if ``end <= start``
+
+    See :ref:`this <encapsulation>` to learn how objects and collections are copied.
     '''
 
     def __init__(self, day: Weekday, start: datetime.time, end: datetime.time, room: Room) -> None:
@@ -85,10 +86,12 @@ class Timeslot:
     @property
     def room(self) -> Room:
         '''
-        Room where the class is taught. It will not be copied.
+        Room where the class is taught.
 
         >>> Timeslot(Weekday.THURSDAY, time(10, 0), time(12, 0), Room('CP1', '0.04', 150)).room
         Room(building='CP1', name_in_building='0.04', capacity=150)
+
+        See :ref:`this <encapsulation>` to learn how objects and collections are copied.
         '''
 
         return self.__room
@@ -105,7 +108,7 @@ class Timeslot:
 
         return self.__room.capacity
 
-    def __eq__(self, other: typing.Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Timeslot):
             return False
 

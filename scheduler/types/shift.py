@@ -1,8 +1,8 @@
 from __future__ import annotations
+from collections.abc import Sequence
 import copy
 import enum
 import re
-import typing
 
 from .timeslot import Timeslot
 
@@ -31,10 +31,11 @@ class Shift:
 
     :param shift_type: Type of the shift.
     :param number:     Number of the shift.
-    :param timeslots:  List of timeslots of the shift. No timeslots will be copied. When ``None``
-                       (default), no timeslots will be added to the shift.
+    :param timeslots:  List of timeslots of the shift.
 
     :raises ShiftError: ``timeslots`` overlap.
+
+    See :ref:`this <encapsulation>` to learn how objects and collections are copied.
     '''
 
     def __init__(
@@ -65,6 +66,8 @@ class Shift:
         >>> shift.add_timeslot(timeslot)
         >>> shift.timeslots
         [Timeslot(day=Weekday.MONDAY, start=datetime.time(10, 0), ...)]
+
+        See :ref:`this <encapsulation>` to learn how objects and collections are copied.
         '''
 
         for t in self.__timeslots:
@@ -124,16 +127,20 @@ class Shift:
         return f'{self.__shift_type}{self.__number}'
 
     @property
-    def timeslots(self) -> list[Timeslot]:
+    def timeslots(self) -> Sequence[Timeslot]:
         '''
         List of timeslots that compose the shift.
 
-        **A copy of the list will be returned**, but the references to the timeslots will not.
+        >>> slot1 = Timeslot(Weekday.MONDAY, time(9, 0), time(11, 0), Room('CP1', '0.20'))
+        >>> slot2 = Timeslot(Weekday.MONDAY, time(14, 0), time(16, 0), Room('CP1', '0.20'))
+        >>> shift = Shift(ShiftType.PL, 6, [slot1, slot2])
+        >>> shift.timeslots
+        [slot1, slot2]
 
-        >>> Student('A104000', [Course('Software Labs II')]).courses
-        {'Software Labes III': Course(name='Software Labs II', shifts={})}
+        See :ref:`this <encapsulation>` to learn how objects and collections are copied.
         '''
-        return copy.copy(self.__timeslots)
+
+        return self.__timeslots
 
     @property
     def capacity(self) -> None | int:
@@ -151,7 +158,7 @@ class Shift:
                 timeslot.capacity for timeslot in self.__timeslots if timeslot.capacity is not None
             )
 
-    def __eq__(self, other: typing.Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Shift):
             return False
 

@@ -75,9 +75,9 @@ def test_add_shift_invalid_different() -> None:
 def test_shifts_encapsulation() -> None:
     course = Course('Programação Imperativa', [Shift(ShiftType.TP, 1)])
     shifts = course.shifts
-    shifts['TP2'] = Shift(ShiftType.TP, 2)
+    course.add_shift(Shift(ShiftType.TP, 2))
 
-    assert len(course.shifts) == 1
+    assert len(shifts) == 2
 
 def test_eq_none() -> None:
     assert Course('Laboratórios de Informática II') != None

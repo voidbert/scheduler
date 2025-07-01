@@ -1,6 +1,6 @@
 from __future__ import annotations
+from collections.abc import Mapping
 import copy
-import typing
 
 from .shift import Shift
 
@@ -15,11 +15,12 @@ class Course:
     student must be attributed, for every course, a single shift of each type the course has.
 
     :param name:   Full name of the course.
-    :param shifts: List of shifts of the course. No shifts will be copied. When ``None`` (default),
-                   no shifts will be added to the course.
+    :param shifts: List of shifts of the course.
 
     :raises CourseError: ``shifts`` has more than one shift with the same
                          :attr:`~.shift.Shift.name`.
+
+    See :ref:`this <encapsulation>` to learn how objects and collections are copied.
     '''
 
     def __init__(self, name: str, shifts: None | list[Shift] = None) -> None:
@@ -43,6 +44,8 @@ class Course:
         >>> course.add_shift(Shift(ShiftType.PL, 1))
         >>> course.shifts
         {'PL1': Shift(shift_type=ShiftType.PL, number=1, timeslots=[])}
+
+        See :ref:`this <encapsulation>` to learn how objects and collections are copied.
         '''
 
         if shift.name in self.__shifts:
@@ -62,20 +65,20 @@ class Course:
         return self.__name
 
     @property
-    def shifts(self) -> dict[str, Shift]:
+    def shifts(self) -> Mapping[str, Shift]:
         '''
         Association between shift names (:attr:`~.course.Shift.name`) and the shifts that are part
         of the course.
 
-        **A copy of the dictionary will be returned**, but the references to the shifts will not.
-
         >>> Course('Software Labs I', [Shift(ShiftType.PL, 1)]).shifts
         {'PL1': Shift(shift_type=ShiftType.PL, number=1, timeslots=[])}
+
+        See :ref:`this <encapsulation>` to learn how objects and collections are copied.
         '''
 
-        return copy.copy(self.__shifts)
+        return self.__shifts
 
-    def __eq__(self, other: typing.Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Course):
             return False
 

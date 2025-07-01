@@ -123,10 +123,11 @@ def test_name() -> None:
 def test_timeslots_encapsulation() -> None:
     shift = Shift(ShiftType.T, 2, [])
     slot = Timeslot(Weekday.MONDAY, datetime.time(10, 0), datetime.time(13, 0), Room('Ed 7', 'A2'))
-    slots = shift.timeslots
-    slots.append(slot)
 
-    assert shift.timeslots == []
+    slots = shift.timeslots
+    shift.add_timeslot(slot)
+
+    assert slots == [slot]
 
 def test_capacity_no_timeslots() -> None:
     assert Shift(ShiftType.TP, 5, []).capacity is None

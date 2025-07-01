@@ -1,5 +1,4 @@
 from __future__ import annotations
-import typing
 
 class RoomError(Exception):
     '''Type of exception thrown by :class:`Room`.'''
@@ -88,7 +87,7 @@ class Room:
 
         self.__capacity = capacity
 
-    def __eq__(self, other: typing.Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Room):
             return False
 
